@@ -1,3 +1,5 @@
+import {ColorCode} from "./ColorCode";
+
 /**
  * Utilities to deal with colors in various formats.
  * Supports Hexadecimal color codes and rgb codes.
@@ -8,8 +10,8 @@ export class ColorUtils {
      * Converts a color from rgb to hexadecimal
      * rgb(0, 0, 0) => #000000
      */
-    public static rgbToHex(color: string): string | null {
-        if (ColorUtils.getColorCodeType(color) === ColorCodeType.Rgb) {
+    public static rgbToHex(color: string): string {
+        if (ColorUtils.getColorCodeType(color) === ColorCode.Rgb) {
             let returnValue = "#";
             const rgb = color.replace(/rgb\(|\)/g, "").split(",");
             for (let i = 0; i < 3; i++) {
@@ -21,27 +23,29 @@ export class ColorUtils {
             }
             return returnValue;
         }
-        return null;
+        throw new TypeError("Color '" + color + "' is not of type ColorCode.Rgb");
     }
 
     /**
      * Returns the color code type of the input string.
      * @param color Input String
      */
-    public static getColorCodeType(color: string): ColorCodeType {
+    public static getColorCodeType(color: string): ColorCode {
         if (color.match(/^#[a-fA-F0-9]{3}$/)) {
-            return ColorCodeType.Hex3;
+            return ColorCode.Hex3;
         }
         if (color.match(/^#[a-fA-F0-9]{6}$/)) {
-            return ColorCodeType.Hex6;
+            return ColorCode.Hex6;
         }
         if (color.match(/^rgb\((\s?\d{1,3}\s?,){2}\s?\d{1,3}\s?\)$/)) {
-            return ColorCodeType.Rgb;
+            return ColorCode.Rgb;
         }
+        /*
         if (color.match(/^rgba\((\s?\d{1,3}\s?,){3}\s?\d\s?\)$/)) {
-            return ColorCodeType.Rgba;
+            return ColorCode.Rgba;
         }
-        return ColorCodeType.NONE;
+        */
+        throw new TypeError("Not a valid color string");
     }
 
     /**
@@ -49,13 +53,10 @@ export class ColorUtils {
      * Returns null on invalid input.
      * @param color
      */
-    public static clean(color: string): string | null {
+    public static clean(color: string): string {
         const type = ColorUtils.getColorCodeType(color);
         switch (type) {
-            case ColorCodeType.NONE: {
-                return null;
-            }
-            case ColorCodeType.Hex3: {
+            case ColorCode.Hex3: {
                 const orig = color;
                 color = "#";
                 for (let i = 0; i < 3; i++) {
@@ -64,19 +65,19 @@ export class ColorUtils {
                 }
                 return color;
             }
-            case ColorCodeType.Hex6: {
+            case ColorCode.Hex6: {
                 return color;
             }
-            case ColorCodeType.Rgb: {
+            case ColorCode.Rgb: {
                 return ColorUtils.rgbToHex(color);
             }
-            case ColorCodeType.Rgba: {
+            case ColorCode.Rgba: {
                 // Depends on background color.
-                return null;
+                throw new Error("not implemented");
             }
         }
         // For good measure
-        return null;
+        throw new Error("Unable to clean: Unknown Color Code Type");
     }
 
     /**
@@ -93,12 +94,4 @@ export class ColorUtils {
         }
         return false;
     }
-}
-
-enum ColorCodeType {
-    NONE,
-    Hex3,
-    Hex6,
-    Rgb,
-    Rgba,
 }
