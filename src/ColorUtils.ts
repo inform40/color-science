@@ -27,6 +27,32 @@ export class ColorUtils {
     }
 
     /**
+     * Converts a color from rgba with 100% opacity to hexadecimal.
+     * rgba(0, 0, 0, 1) => #000000
+     * rgba(0, 0, 0, 0) => null
+     * @param color
+     */
+    public static rgbaToHex(color: string): string | null {
+        if (ColorUtils.getColorCodeType(color) === ColorCode.Rgba) {
+            const rgba = color.replace(/rgba\(|\)|\s/g, "").split(",");
+            if (rgba[3] !== "1") {
+                return null;
+            } else {
+                let returnValue = "#";
+                for (let i = 0; i < 3; i++) {
+                    let hex = Number(rgba[i]).toString(16);
+                    if (hex.length < 2) {
+                        hex = "0" + hex;
+                    }
+                    returnValue += hex;
+                }
+                return returnValue;
+            }
+        }
+        return null;
+    }
+
+    /**
      * Returns the color code type of the input string.
      * @param color Input String
      */
@@ -40,11 +66,9 @@ export class ColorUtils {
         if (color.match(/^rgb\((\s?\d{1,3}\s?,){2}\s?\d{1,3}\s?\)$/)) {
             return ColorCode.Rgb;
         }
-        /*
         if (color.match(/^rgba\((\s?\d{1,3}\s?,){3}\s?\d\s?\)$/)) {
             return ColorCode.Rgba;
         }
-        */
         throw new TypeError("Not a valid color string");
     }
 

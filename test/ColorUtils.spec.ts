@@ -81,6 +81,25 @@ describe("ColorUtils", () => {
     });
 
     describe("rgbaToHex", () => {
-        
-    })
+        it("should throw on invalid input", () => {
+            expect(() => {
+                ColorUtils.rgbaToHex("");
+            }).to.throw;
+            expect(() => {
+                ColorUtils.rgbaToHex("#000");
+            }).to.throw;
+            expect(() => {
+                ColorUtils.rgbaToHex("#000000");
+            }).to.throw;
+            expect(() => {
+                ColorUtils.rgbaToHex("rgba(0,0,0,0");
+            }).to.throw;
+        });
+        it("should convert rgb", () => {
+            expect(ColorUtils.rgbaToHex("rgba(0,0,0,1)")).to.equal("#000000");
+            expect(ColorUtils.rgbaToHex("rgba(0 , 0 , 0 , 1)")).to.equal("#000000");
+            expect(ColorUtils.rgbaToHex("rgba(255,255,255,1)")).to.equal("#ffffff");
+            expect(ColorUtils.rgbaToHex("rgba(42 , 148 , 240 , 1)")).to.equal("#2a94f0");
+        });
+    });
 });
